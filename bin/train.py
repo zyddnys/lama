@@ -53,9 +53,12 @@ def main(config: OmegaConf):
         if need_set_deterministic:
             trainer_kwargs['deterministic'] = True
 
+        d = dict(config.trainer.checkpoint_kwargs)
+        del d['period']
+
         trainer = Trainer(
             # there is no need to suppress checkpointing in ddp, because it handles rank on its own
-            callbacks=ModelCheckpoint(dirpath=checkpoints_dir, **config.trainer.checkpoint_kwargs),
+            callbacks=ModelCheckpoint(dirpath=checkpoints_dir, **d),
             logger=metrics_logger,
             default_root_dir=os.getcwd(),
             **trainer_kwargs

@@ -130,35 +130,35 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
         dataloader = make_default_train_dataloader(**self.config.data.train)
         return dataloader
 
-    def val_dataloader(self):
-        res = [make_default_val_dataloader(**self.config.data.val)]
+    # def val_dataloader(self):
+    #     res = [make_default_val_dataloader(**self.config.data.val)]
 
-        if self.config.data.visual_test is not None:
-            res = res + [make_default_val_dataloader(**self.config.data.visual_test)]
-        else:
-            res = res + res
+    #     if self.config.data.visual_test is not None:
+    #         res = res + [make_default_val_dataloader(**self.config.data.visual_test)]
+    #     else:
+    #         res = res + res
 
-        extra_val = self.config.data.get('extra_val', ())
-        if extra_val:
-            res += [make_default_val_dataloader(**extra_val[k]) for k in self.extra_val_titles]
+    #     extra_val = self.config.data.get('extra_val', ())
+    #     if extra_val:
+    #         res += [make_default_val_dataloader(**extra_val[k]) for k in self.extra_val_titles]
 
-        return res
+    #     return res
 
     def training_step(self, batch, batch_idx, optimizer_idx=None):
         self._is_training_step = True
         return self._do_step(batch, batch_idx, mode='train', optimizer_idx=optimizer_idx)
 
-    def validation_step(self, batch, batch_idx, dataloader_idx):
-        extra_val_key = None
-        if dataloader_idx == 0:
-            mode = 'val'
-        elif dataloader_idx == 1:
-            mode = 'test'
-        else:
-            mode = 'extra_val'
-            extra_val_key = self.extra_val_titles[dataloader_idx - 2]
-        self._is_training_step = False
-        return self._do_step(batch, batch_idx, mode=mode, extra_val_key=extra_val_key)
+    # def validation_step(self, batch, batch_idx, dataloader_idx):
+    #     extra_val_key = None
+    #     if dataloader_idx == 0:
+    #         mode = 'val'
+    #     elif dataloader_idx == 1:
+    #         mode = 'test'
+    #     else:
+    #         mode = 'extra_val'
+    #         extra_val_key = self.extra_val_titles[dataloader_idx - 2]
+    #     self._is_training_step = False
+    #     return self._do_step(batch, batch_idx, mode=mode, extra_val_key=extra_val_key)
 
     def training_step_end(self, batch_parts_outputs):
         if self.training and self.average_generator \
